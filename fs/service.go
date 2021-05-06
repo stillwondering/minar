@@ -2,6 +2,7 @@ package fs
 
 import (
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
@@ -64,6 +65,34 @@ func (repo *MinutesRepository) Create(data minar.CreateMinutesData) (minar.Minut
 	return id, nil
 }
 
+func (repo *MinutesRepository) Find(id minar.MinutesID) (*minar.Minutes, error) {
+	path := repo.createFilename(id)
+	if !fileExists(path) {
+		return nil, nil
+	}
+
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "read file")
+	}
+
+	m, err := xml.Decode(b)
+	if err != nil {
+		return nil, errors.Wrap(err, "decode file content")
+	}
+
+	return &m, nil
+}
+
 func (repo *MinutesRepository) createFilename(id minar.MinutesID) string {
 	return filepath.Join(repo.BaseDir, string(id)+".xml")
+}
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return !info.IsDir()
 }

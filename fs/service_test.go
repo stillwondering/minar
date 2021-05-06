@@ -146,3 +146,89 @@ func TestCreate(t *testing.T) {
 		})
 	}
 }
+
+func TestFind(t *testing.T) {
+	tt := []struct {
+		name           string
+		searchID       string
+		repo           func() *MinutesRepository
+		returnsMinutes bool
+		expected       *minar.Minutes
+	}{
+		{
+			name:     "EmptyRoot",
+			searchID: "1",
+			repo: func() *MinutesRepository {
+				return &MinutesRepository{
+					BaseDir: t.TempDir(),
+					GenerateID: func() minar.MinutesID {
+						return minar.MinutesID("1")
+					},
+				}
+			},
+			returnsMinutes: false,
+		},
+		{
+			name:     "NonexistantID",
+			searchID: "2",
+			repo: func() *MinutesRepository {
+				return &MinutesRepository{
+					BaseDir: "testdata/OneRecord",
+					GenerateID: func() minar.MinutesID {
+						return minar.MinutesID("1")
+					},
+				}
+			},
+			returnsMinutes: false,
+		},
+		{
+			name:     "OneRecord",
+			searchID: "1",
+			repo: func() *MinutesRepository {
+				return &MinutesRepository{
+					BaseDir: "testdata/OneRecord",
+					GenerateID: func() minar.MinutesID {
+						return minar.MinutesID("1")
+					},
+				}
+			},
+			returnsMinutes: true,
+			expected: &minar.Minutes{
+				ID:           minar.MinutesID("id"),
+				Title:        "First meeting minutes",
+				Participants: []string{"Me", "You"},
+				Topics: []minar.Topic{
+					{
+						Title:   "First topic",
+						Content: "That's what we discussed in here",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := tc.repo()
+			m, err := repo.Find(minar.MinutesID(tc.searchID))
+			if err != nil {
+				t.Fatalf("expected no error, got: %v", err)
+			}
+
+			// We don't expect to get any return value.
+			if !tc.returnsMinutes {
+				if m != nil {
+					t.Fatalf("expected no return value, got: %v", m)
+				}
+			} else {
+				if m == nil {
+					t.Fatal("expected return value, got: nil")
+				}
+
+				if !tc.expected.Equals(*m) {
+					t.Errorf("expected: %v, got: %v", *tc.expected, *m)
+				}
+			}
+		})
+	}
+}
