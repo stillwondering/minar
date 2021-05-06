@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<minutes id="awesomeID">
+  <title>First meeting minutes</title>
+  <participant>Me</participant>
+  <participant>You</participant>
+  <topic>
+    <title>First topic</title>
+    <content>That&#39;s what we discussed in here</content>
+  </topic>
+</minutes>

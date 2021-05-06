@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<minutes id="1">
+  <title>Taking the hobbits to Isengard</title>
+  <participant>Legolas</participant>
+  <participant>Gimli</participant>
+  <topic>
+    <title>First topic</title>
+    <content>Something we talked about.</content>
+  </topic>
+  <topic>
+    <title>Second topic</title>
+    <content>Something we talked about.</content>
+  </topic>
+</minutes>
