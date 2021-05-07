@@ -76,8 +76,8 @@ func TestFindAll(t *testing.T) {
 			}
 
 			for i := 0; i < len(tc.expectedMinutes); i++ {
-				if !tc.expectedMinutes[i].Equals(minutes[i]) {
-					t.Fatalf("expected: %v, got: %v", tc.expectedMinutes[i], minutes[i])
+				if !tc.expectedMinutes[i].Equals(*minutes[i]) {
+					t.Fatalf("expected: %v, got: %v", tc.expectedMinutes[i], *minutes[i])
 				}
 			}
 		})

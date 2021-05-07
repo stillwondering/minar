@@ -15,26 +15,26 @@ type MinutesRepository struct {
 	GenerateID minar.IDGeneratorFunc
 }
 
-func (repo *MinutesRepository) FindAll() ([]minar.Minutes, error) {
-	var minutes []minar.Minutes
+func (repo *MinutesRepository) FindAll() ([]*minar.Minutes, error) {
+	var minutes []*minar.Minutes
 
 	files, err := filepath.Glob(filepath.Join(repo.BaseDir, "/*.xml"))
 	if err != nil {
-		return minutes, errors.Wrap(err, "glob files")
+		return nil, errors.Wrap(err, "glob files")
 	}
 
 	for _, file := range files {
 		b, err := ioutil.ReadFile(file)
 		if err != nil {
-			return minutes, errors.Wrap(err, "read file")
+			return nil, errors.Wrap(err, "read file")
 		}
 
 		m, err := xml.Decode(b)
 		if err != nil {
-			return minutes, errors.Wrap(err, "decode file content")
+			return nil, errors.Wrap(err, "decode file content")
 		}
 
-		minutes = append(minutes, m)
+		minutes = append(minutes, &m)
 	}
 
 	return minutes, nil
