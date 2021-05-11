@@ -1,31 +1,38 @@
 package main
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func TestRun(t *testing.T) {
 	tt := []struct {
-		name        string
-		cmdline     []string
-		expectError bool
+		name           string
+		cmdline        []string
+		expectError    bool
+		expectedOutput []byte
 	}{
 		{
-			name:        "Empty cmdline",
-			expectError: false,
-		},
-		{
-			name:        "Help flag",
-			cmdline:     []string{"-h"},
-			expectError: true,
+			name:           "Version flag",
+			cmdline:        []string{"-version"},
+			expectError:    false,
+			expectedOutput: []byte(Version + "\n"),
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			err := run(tc.cmdline)
+			buf := bytes.Buffer{}
 
+			err := run(tc.cmdline, &buf)
 			gotError := err != nil
 			if tc.expectError != gotError {
-				t.Errorf("expected error: %v, got: %v", tc.expectError, err)
+				t.Errorf("expected error: %v, got error: %v", tc.expectError, gotError)
+			}
+
+			actualOutput := buf.Bytes()
+			if !bytes.Equal(tc.expectedOutput, actualOutput) {
+				t.Errorf("expected output %s (%v), got %s (%v)", tc.expectedOutput, tc.expectedOutput, actualOutput, actualOutput)
 			}
 		})
 	}
@@ -39,15 +46,19 @@ func TestConfigFromCmdline(t *testing.T) {
 		expectedConfig *config
 	}{
 		{
-			name:        "Help flag",
-			cmdline:     []string{"-h"},
-			expectError: true,
-		},
-		{
 			name:        "Empty command line",
 			cmdline:     []string{},
 			expectError: false,
 			expectedConfig: &config{
+				listenAddress: ":8080",
+			},
+		},
+		{
+			name:        "Version flag",
+			cmdline:     []string{"-version"},
+			expectError: false,
+			expectedConfig: &config{
+				printVersion:  true,
 				listenAddress: ":8080",
 			},
 		},
