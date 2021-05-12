@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ block "title" . }}minar | the plain file archiving solution{{ end }}</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="page">
+        <header class="header">
+            <h1 class="brand">minar</h1>
+            <nav class="navigation">
+                <li><a href="/minutes">Minutes</a></li>
+            </nav>
+        </header>
+        <main class="main">
+            {{ block "content" . }}{{ end }}
+        </main>
+        <footer class="footer">
+            <p>Visit us on <a href="https://github.com/stillwondering/minar">Github</a></p>
+        </footer>
+    </div>
+</body>
+</html>
