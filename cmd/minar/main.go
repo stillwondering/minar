@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
+
+	"github.com/stillwondering/minar/cmd/minar/templates"
 )
 
 const (
@@ -34,7 +38,13 @@ func run(args []string, out io.Writer) error {
 		return nil
 	}
 
-	return nil
+	fs := http.FileServer(http.Dir("assets"))
+
+	mux := http.NewServeMux()
+	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	mux.HandleFunc("/", index())
+
+	return http.ListenAndServe(cfg.listenAddress, mux)
 }
 
 type config struct {
@@ -56,4 +66,17 @@ func configFromCmdline(cmdline []string) (*config, error) {
 		printVersion:  *printVersion,
 		listenAddress: *listenAddress,
 	}, nil
+}
+
+func index() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		buf := bytes.Buffer{}
+
+		if err := templates.Index(&buf); err != nil {
+			http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		io.Copy(rw, &buf)
+	}
 }
